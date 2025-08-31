@@ -1,10 +1,27 @@
+from sklearn.metrics import auc
 import torch
 
+
+def print_evaluations(
+    benchmark, documents,
+    document_idxs_by_rank,
+    topks=(1, 2, 4, 8, 16, 32, 64),
+):
+    precision_recalls = []
+    for k in topks:
+        precision, recall = evaluate_rag_reranked(
+            benchmark, documents,
+            document_idxs_by_rank,
+            k
+        )
+        precision_recalls.append((precision, recall))
+        print(f"precision @ {k:<2}: {precision:7.4f}, recall @ {k:<2}: {recall:7.4f}")
+    precision_recalls.sort()
+    print(f'AUC: {auc(*zip(*precision_recalls))}')
 
 def evaluate_rag(benchmark, documents, similarities, topk):
     document_idxs_by_rank = torch.argsort(similarities, descending=True)[:, :topk]
     return evaluate_rag_reranked(benchmark, documents, document_idxs_by_rank, topk)
-
 
 def evaluate_rag_reranked(benchmark, documents, document_idxs_by_rank, topk):
     precision = recall = 0
