@@ -5,7 +5,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 class Reranker:
 
     def __init__(self, model_path: str="ContextualAI/ctxl-rerank-v2-instruct-multilingual-2b"):
-        device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
         
         tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
