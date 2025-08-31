@@ -2,13 +2,18 @@ import torch
 
 
 def evaluate_rag(benchmark, documents, similarities, topk):
+    document_idxs_by_rank = torch.argsort(similarities, descending=True)[:, :topk]
+    return evaluate_rag_reranked(benchmark, documents, document_idxs_by_rank, topk)
+
+
+def evaluate_rag_reranked(benchmark, documents, document_idxs_by_rank, topk):
     precision = recall = 0
     count = 0
-    indices = torch.argsort(similarities, descending=True)[:, :topk]
-    for test_idx, document_idxs in enumerate(indices):
+    for test, document_idxs in zip(benchmark, document_idxs_by_rank):
+        document_idxs = document_idxs[:topk]
         # Compute spans
         spans_true = []
-        for snippet in benchmark[test_idx]["snippets"]:
+        for snippet in test["snippets"]:
             spans_true.append(snippet["span"])
         spans_pred = []
         for idx in document_idxs:
