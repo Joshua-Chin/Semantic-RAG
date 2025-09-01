@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag_legal_analysis"
+version = "0.1.0"
+description = "A Retrieval Augmented Graph for Legal Documents"
+license = "CC-BY-NC-SA-4.0"
+dependencies = [
+    # ML & Compute libraries
+    "numpy",
+    "torch",
+    "transformers",
+    "sentence-transformers",
+    "langchain-text-splitters",
+
+    # Notebook & Visualization
+    "jupyter",
+    "matplotlib",
+    "seaborn",
+    "tqdm",
+
+    "requests",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["data*"]
