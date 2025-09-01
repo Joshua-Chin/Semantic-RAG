@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import zipfile
 
 import requests
@@ -52,6 +53,28 @@ def load_benchmark_corpus(subset="privacy_qa"):
             corpus[document] = f.read()
     
     return benchmark, corpus
+
+def load_benchmark_corpus_sample(subset="privacy_qa", num_documents=5):
+    extract_data()
+    with open(os.path.join(LEGALBENCH_RAG_PATH, "benchmarks", f"{subset}.json")) as f:
+        benchmark = json.load(f)['tests']
+    
+    corpus = {}
+    corpus_path = os.path.join(LEGALBENCH_RAG_PATH, "corpus", subset)
+    # Sample documents from corpus.
+    random.seed(42)
+    for document in random.sample(os.listdir(corpus_path), num_documents):
+        with open(os.path.join(corpus_path, document)) as f:
+            corpus[document] = f.read()
+    # restrict tests to the document.
+    benchmark_sample = []
+    for test in benchmark:
+        file_path = test["snippets"][0]["file_path"]
+        filename = os.path.basename(file_path)
+        if filename in corpus:
+            benchmark_sample.append(test)
+            
+    return benchmark_sample, corpus
 
 def corpus_to_texts_metadatas(corpus):
     names, texts = zip(*corpus.items())
