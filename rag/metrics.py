@@ -20,8 +20,11 @@ def print_evaluations(
     print(f'AUC: {auc(*zip(*precision_recalls))}')
 
 def evaluate_rag(benchmark, documents, similarities, topk):
-    document_idxs_by_rank = torch.argsort(similarities, descending=True)[:, :topk]
+    document_idxs_by_rank = similarities_to_ranks(similarities[:, :topk])
     return evaluate_rag_reranked(benchmark, documents, document_idxs_by_rank, topk)
+
+def similarities_to_ranks(similarities):
+    return torch.argsort(similarities, descending=True)
 
 def evaluate_rag_reranked(benchmark, documents, document_idxs_by_rank, topk):
     precision = recall = 0
