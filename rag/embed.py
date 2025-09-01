@@ -1,5 +1,6 @@
 from rag.util import cleanup
 
+
 def compute_similarities(model, queries, documents):
     document_embeddings = model.encode(
         documents,
@@ -15,7 +16,7 @@ def compute_similarities(model, queries, documents):
     return model.similarity(query_embeddings, document_embeddings)
 
 def get_document_contents(documents):
-    return [docum]
+    [f"{document.metadata["source_file"]}: {document.page_content}" for document in documents]
 
 def get_query_strings(benchmark):
     return [test['query'] for test in benchmark]

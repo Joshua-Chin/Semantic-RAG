@@ -52,3 +52,11 @@ def load_benchmark_corpus(subset="privacy_qa"):
             corpus[document] = f.read()
     
     return benchmark, corpus
+
+def corpus_to_texts_metadatas(corpus):
+    names, texts = zip(*corpus.items())
+    metadatas = [
+        {"source_file": name}
+        for idx, name in enumerate(names)
+    ]
+    return texts, metadatas
