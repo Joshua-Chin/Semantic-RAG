@@ -1,6 +1,8 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
+from .util import cleanup
+
 
 class Reranker:
 
@@ -23,7 +25,9 @@ class Reranker:
         self.model = model
 
     def __call__(self, query: str, instruction: str, documents: list[str]):
-        return infer_w_hf(self.model, self.tokenizer, query, instruction, documents)
+        results = infer_w_hf(self.model, self.tokenizer, query, instruction, documents)
+        cleanup()
+        return results
 
 def format_prompts(query: str, instruction: str, documents: list[str]) -> list[str]:
     """Format query and documents into prompts for reranking."""
