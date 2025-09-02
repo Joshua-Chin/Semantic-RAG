@@ -10,7 +10,7 @@ from rag.metrics import print_evaluations
 
 def main():
     # Load LegalBench-RAG
-    print("Loading corpus")
+    print("Loading corpus (privacy_qa)")
     benchmark, corpus = load_benchmark_corpus()
     texts, metadatas = corpus_to_texts_metadatas(corpus)
     # Chunk texts
