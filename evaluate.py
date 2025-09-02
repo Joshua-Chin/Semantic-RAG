@@ -1,4 +1,3 @@
-from tqdm.auto import tqdm
 import torch
 
 from rag.load import load_benchmark_corpus, corpus_to_texts_metadatas
