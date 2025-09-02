@@ -15,7 +15,6 @@ dependencies = [
     "transformers",
     "sentence-transformers",
     "langchain-text-splitters",
-    "flash-attn",
 
     # Notebook & Visualization
     "jupyter",

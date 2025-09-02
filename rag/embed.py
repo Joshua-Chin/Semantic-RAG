@@ -10,7 +10,6 @@ def compute_similarities(model_or_path, queries, documents):
             model_or_path,
             model_kwargs={
                 "quantization_config": BitsAndBytesConfig(load_in_8bit=True),
-                "attn_implementation": "flash_attention_2",
             }
         )
     else:
