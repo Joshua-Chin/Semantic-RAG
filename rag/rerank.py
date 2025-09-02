@@ -39,7 +39,6 @@ class Reranker:
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             quantization_config=BitsAndBytesConfig(load_in_8bit=True),
-            attn_implementation="flash_attention_2",
             dtype=dtype,
         )
         model.eval()
