@@ -4,8 +4,60 @@ import numpy as np
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from sentence_transformers import SentenceTransformer
+from transformers import BitsAndBytesConfig
+
+from rag.util import cleanup
 
 
+def create_documents(
+    model_or_path: str,
+    texts: list[str],
+    metadatas: list[dict],
+    chunk_size: int,
+    atom_size: int,
+    pad: int=2,
+):
+    if isinstance(model_or_path, str):
+        model = SentenceTransformer(
+            model_or_path,
+            model_kwargs={"quantization_config": BitsAndBytesConfig(load_in_8bit=True)}
+        )
+    else:
+        model = model_or_path
+    documents = []
+    for text, metadata in zip(texts, metadatas):
+        chunks = chunk_text(model, text, chunk_size, atom_size, pad)
+        # transform chunks into documents
+        for start, end in chunks:
+            chunk_metadata = dict(metadata)
+            chunk_metadata['start_index'] = start
+            documents.append(Document(
+                page_content=text[start:end],
+                metadata=chunk_metadata,
+            ))
+    del model
+    cleanup()
+    return documents
+
+def chunk_text(
+    model,
+    text: str,
+    chunk_size: int,
+    atom_size: int,
+    pad: int,
+):
+    # preprocess setences
+    spans = split_to_spans(text, atom_size)
+    windowed_spans = window_spans(spans, pad=pad)
+    sentence_blocks = [text[start:end] for start, end in windowed_spans]
+    # generate setence embeddings
+    embeddings = model.encode(sentence_blocks, show_progress_bar=True)
+    cleanup()
+    # split chunks
+    distances = pairwise_cosine_distances(embeddings)
+    chunk_spans = split_recursive(spans, distances, chunk_size)
+    return chunk_spans
 
 def split_to_spans(text, chunk_size):
     """
