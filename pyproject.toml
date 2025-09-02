@@ -20,8 +20,9 @@ dependencies = [
     "jupyter",
     "matplotlib",
     "seaborn",
-    "tqdm",
 
+    # Utilties
+    "tqdm",
     "requests",
 ]
 
