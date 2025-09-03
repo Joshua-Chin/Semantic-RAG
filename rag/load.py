@@ -12,21 +12,20 @@ DATA_PATH = os.path.join(ROOT_PATH, "data")
 ZIP_PATH = os.path.join(DATA_PATH, "LegalBench-RAG.zip")
 LEGALBENCH_RAG_PATH = os.path.join(DATA_PATH, "LegalBench-RAG")
 
-DROPBOX_SHARE_LINK = "https://www.dropbox.com/scl/fo/r7xfa5i3hdsbxex1w6amw/AID389Olvtm-ZLTKAPrw6k4?rlkey=5n8zrbk4c08lbit3iiexofmwg&st=0hu354cq&dl=0"
+DROPBOX_SHARE_LINK = "https://www.dropbox.com/scl/fo/r7xfa5i3hdsbxex1w6amw/AID389Olvtm-ZLTKAPrw6k4?rlkey=5n8zrbk4c08lbit3iiexofmwg&st=0hu354cq&dl=1"
+
+def ensure_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 def download_data():
+    ensure_directory(DATA_PATH)
     if not os.path.exists(ZIP_PATH):
-        print("Downloading LegalBench-RAG")
-        
-        direct_download_link = (
-            DROPBOX_SHARE_LINK
-            .replace("www.dropbox.com", "dl.dropboxusercontent.com")
-            .replace("?dl=0", "?dl=0")
-        )
-        print(f"Downloading from: {direct_download_link}")
+        print("Downloading LegalBench-RAG (This may take a while)")
+        print(f"Downloading from: {DROPBOX_SHARE_LINK}")
 
         with open(ZIP_PATH, 'wb') as f:
-            with requests.get(direct_download_link, stream=True) as r:
+            with requests.get(DROPBOX_SHARE_LINK, stream=True) as r:
                 r.raise_for_status()
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
@@ -34,12 +33,13 @@ def download_data():
 
 def extract_data():
     download_data()
-    if not os.listdir(DATA_PATH):
+    if not os.path.exists(LEGALBENCH_RAG_PATH):
+        print("Extracting LegalBench-RAG")
         with zipfile.ZipFile(ZIP_PATH, 'r') as zip_ref:
             for name in zip_ref.namelist():
                 if name.endswith('/'):
                     continue
-                zip_ref.extract(name, path=DATA_PATH)
+                zip_ref.extract(name, path=LEGALBENCH_RAG_PATH)
 
 def load_benchmark_corpus(subset="privacy_qa"):
     extract_data()
